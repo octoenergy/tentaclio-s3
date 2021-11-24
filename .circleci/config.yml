@@ -12,6 +12,7 @@ executors:
       - image: circleci/python:3.9
         environment:
           PIPENV_VENV_IN_PROJECT: true
+          TENTACLIO__CONN__S3_TEST: s3://public_key:private_key@tentaclio-bucket
     working_directory: "~/lib"
 
 # -----------------
@@ -81,24 +82,12 @@ jobs:
           command: make unit
 
   functional:
-    working_directory: ~/lib
-    docker:
-      - image: circleci/python:3.9
-        environment:
-          TENTACLIO__CONN__POSTGRES_TEST: postgresql://:@localhost:5432/tentaclio-db
-          PIPENV_VENV_IN_PROJECT: true
-
-      - image: circleci/postgres:9.5.10
-        environment:
-          # CircleCI img run under `circleci` user
-          POSTGRES_USER: circleci
-          POSTGRES_DB: tentaclio-db
-
+    executor: standard
     steps:
       - checkout_source
       - update_virtualenv
       - run:
-          name: Run postgres functional tests
+          name: Run s3 functional tests
           command: make functional
 
   release:

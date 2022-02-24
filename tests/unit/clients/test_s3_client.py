@@ -122,3 +122,20 @@ def test_build_url(url, expected, mocker):
 
     url = s3_client._build_url(client.bucket, "last_path/")
     assert url == expected
+
+
+@pytest.mark.parametrize(
+    "acl, expected",
+    (
+        ("bucket-owner-full-control", {"ACL": "bucket-owner-full-control"}),
+        ("public-read", {"ACL": "public-read"}),
+        (None, {}),
+    ),
+)
+def test_add_acl(mocker, mocked_conn, acl, expected):
+    url = "s3://bucket/path"
+    with s3_client.S3Client(url, acl=acl) as client:
+        client.conn.upload_fileobj = mocked_uploader = mocker.MagicMock()
+        reader = io.StringIO()
+        client.put(reader)
+        mocked_uploader.assert_called_with(reader, "bucket", "path", ExtraArgs=expected)

@@ -1,6 +1,7 @@
 import pytest
 import tentaclio as tio
-from tentaclio.clients.exceptions import S3Error
+
+from tentaclio_s3.clients.exceptions import S3Error
 
 
 def test_scandir(fixture_client, test_bucket):

@@ -42,18 +42,9 @@ commands:
           paths:
             - "./.git"
 
-# todo: remove unixodbc when tentaclio 1.0 is released
-  install_unixodbc:
-    steps:
-      - run:
-          name: Instal UnixODBC
-          command: |
-            sudo apt-get install unixodbc-dev -y
-
   update_virtualenv:
     steps:
       - configure_github
-      - install_unixodbc
       - run:
           name: Install Python packages
           command: make sync

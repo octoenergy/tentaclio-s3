@@ -9,7 +9,7 @@ version: 2.1
 executors:
   standard:
     docker:
-      - image: circleci/python:3.9
+      - image: cimg/python:3.9
         environment:
           PIPENV_VENV_IN_PROJECT: true
           TENTACLIO__CONN__S3_TEST: s3://public_key:private_key@tentaclio-bucket

@@ -31,9 +31,9 @@ class S3Client(base_client.BaseClient["S3Client"]):
     def __init__(
         self,
         url: Union[urls.URL, str],
-        aws_profile: str = None,
+        aws_profile: Optional[str] = None,
         conn_encrypt: bool = False,
-        acl: str = None,
+        acl: Optional[str] = None,
     ) -> None:
         """Create a new S3 client.
 
@@ -81,7 +81,10 @@ class S3Client(base_client.BaseClient["S3Client"]):
 
     @decorators.check_conn
     def get(
-        self, writer: protocols.ByteWriter, bucket_name: str = None, key_name: str = None
+        self,
+        writer: protocols.ByteWriter,
+        bucket_name: Optional[str] = None,
+        key_name: Optional[str] = None,
     ) -> None:
         """Download the contents from s3 and write them in the provided writer.
 
@@ -92,13 +95,16 @@ class S3Client(base_client.BaseClient["S3Client"]):
         s3_bucket, s3_key = self._fetch_bucket_and_key(bucket_name, key_name)
 
         if not self._isfile(s3_bucket, s3_key):
-            raise exceptions.S3Error("Unable to fetch the remote file")
+            raise exceptions.S3Error(f"Unable to fetch the remote file: s3://{s3_bucket}/{s3_key}")
 
         self.conn.download_fileobj(s3_bucket, s3_key, writer)
 
     @decorators.check_conn
     def put(
-        self, reader: protocols.ByteReader, bucket_name: str = None, key_name: str = None
+        self,
+        reader: protocols.ByteReader,
+        bucket_name: Optional[str] = None,
+        key_name: Optional[str] = None,
     ) -> None:
         """Up the contents of the reader to s3.
 

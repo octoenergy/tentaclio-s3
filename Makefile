@@ -44,6 +44,9 @@ format: ## Run black and isort
 # Testing
 
 .PHONY: test
+test:
+	TENTACLIO__CONN__S3_TEST=s3://public_key:private_key@tentaclio-bucket pipenv run pytest tests
+
 unit: ## Run unit tests
 	pipenv run pytest tests/unit
 

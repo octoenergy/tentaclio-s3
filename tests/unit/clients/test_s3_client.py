@@ -8,8 +8,7 @@ from tentaclio_s3.clients import exceptions, s3_client
 
 @pytest.fixture()
 def mocked_conn(mocker):
-    with mocker.patch.object(s3_client.S3Client, "_connect", return_value=mocker.Mock()) as m:
-        yield m
+    return mocker.patch.object(s3_client.S3Client, "_connect", return_value=mocker.Mock())
 
 
 class TestS3Client:
@@ -41,9 +40,7 @@ class TestS3Client:
 
     @pytest.mark.parametrize("url", [("s3:///"), ("s3://")])
     def test_get_buckets(self, url, mocked_conn):
-
         with s3_client.S3Client(url) as client:
-
             expected_buckets = ("mocked-0", "mocked-1")
             bucket_names = [{"Name": bucket} for bucket in expected_buckets]
             client.conn.list_buckets.return_value = {"Buckets": bucket_names}

@@ -11,7 +11,6 @@ executors:
     docker:
       - image: cimg/python:3.9
         environment:
-          PIPENV_VENV_IN_PROJECT: true
           TENTACLIO__CONN__S3_TEST: s3://public_key:private_key@tentaclio-bucket
     working_directory: "~/lib"
 
@@ -46,10 +45,13 @@ commands:
     steps:
       - configure_github
       - run:
+          name: Install uv
+          command: curl -LsSf https://astral.sh/uv/install.sh | sh && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $BASH_ENV
+      - run:
           name: Install Python packages
           command: make sync
       - save_cache:
-          key: virtualenv-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: virtualenv-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ checksum "uv.lock" }}
           paths:
             - "./.venv"
 
@@ -88,15 +90,12 @@ jobs:
       - update_virtualenv
       - restore_cache:
           keys:
-            - pip-cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ checksum "uv.lock" }}
             - pip-cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-
             - pip-cache-{{ .Environment.CACHE_VERSION }}-
       - run:
           name: Verify git tag vs. version
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            python setup.py verify
+          command: uv run python scripts/verify_version.py
       - run:
           name: Init .pypirc
           command: |

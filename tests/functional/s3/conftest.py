@@ -1,4 +1,5 @@
 """Pytest config for s3 functional tests."""
+
 import os
 
 import pytest
